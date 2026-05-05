@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luna Veg</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="l-logo">Luna Veg</div>
+  <div class="l-sub">Comida saludable</div>
+  <div class="spinner"></div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">L</div>
+    <div class="login-title">Luna Veg</div>
+    <div class="login-sub">Sistema de pedidos y cobros.<br>Inicia sesion con tu cuenta de Google.</div>
+    <button class="btn-google" onclick="loginGoogle()">
+      <svg viewBox="0 0 48 48">
+        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+      </svg>
+      Entrar con Google
+    </button>
+  </div>
+  <div class="login-footer">Luna Veg - Solo usuarios autorizados</div>
+</div>
+
+<!-- MODAL AGREGAR CLIENTE -->
+<div class="modal-overlay" id="modal-cliente">
+  <div class="modal">
+    <div class="modal-title">Agregar cliente nuevo</div>
+    <div class="form-group">
+      <label class="form-label">Nombre completo</label>
+      <input class="form-input" id="nuevo-nombre" type="text" placeholder="Ej. Maria Lopez">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Categoria de precio</label>
+      <select class="form-select" id="nuevo-tipo">
+        <option value="45">Normal - Q275 plan / Q45 suelto</option>
+        <option value="35">Amigos / Iglesia - Q225 plan / Q35 suelto</option>
+        <option value="25e">Enfermedad - Q150 plan / Q25 suelto</option>
+        <option value="25f">Familia - Q125 plan / Q25 suelto</option>
+        <option value="90">Familiar doble - Q275 plan / Q45x2 suelto</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Metodo de pago</label>
+      <select class="form-select" id="nuevo-metodo">
+        <option value="Transferencia">Transferencia bancaria</option>
+        <option value="Recurrente tarjeta">Recurrente con tarjeta</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-o" style="flex:1;" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-p" style="flex:1;" onclick="agregarCliente()">Agregar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR CLIENTE -->
+<div class="modal-overlay" id="modal-editar">
+  <div class="modal">
+    <div class="modal-title">Editar cliente</div>
+    <div id="edit-nombre-display" style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:20px;padding:12px 14px;background:var(--bg);border-radius:10px;"></div>
+    <div class="form-group">
+      <label class="form-label">Categoria de precio</label>
+      <select class="form-select" id="edit-tipo">
+        <option value="45">Normal - Q275 plan / Q45 suelto</option>
+        <option value="35">Amigos / Iglesia - Q225 plan / Q35 suelto</option>
+        <option value="25e">Enfermedad - Q150 plan / Q25 suelto</option>
+        <option value="25f">Familia - Q125 plan / Q25 suelto</option>
+        <option value="90">Familiar doble - Q275 plan / Q45x2 suelto</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Metodo de pago</label>
+      <select class="form-select" id="edit-metodo">
+        <option value="Transferencia">Transferencia bancaria</option>
+        <option value="Recurrente tarjeta">Recurrente con tarjeta</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-o" style="flex:1;" onclick="cerrarModalEditar()">Cancelar</button>
+      <button class="btn-p" style="flex:1;" onclick="guardarEdicion()">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="cerrarSidebar()"></div>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-brand">
+      <div class="sb-mark">L</div>
+      <div class="sb-name">Luna Veg</div>
+      <div class="sb-sub2">Comida saludable</div>
+    </div>
+    <div class="sb-week">
+      <div class="sb-wlbl">Semana actual</div>
+      <div class="sb-wval" id="sb-sem">---</div>
+      <div class="sb-date" id="sb-fecha">---</div>
+    </div>
+    <nav class="sb-nav">
+      <button class="nav-item active" onclick="irA('pedidos',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/>
+        </svg>
+        Pedidos del domingo
+        <span class="nav-badge" id="nb-p">0</span>
+      </button>
+      <button class="nav-item" onclick="irA('lunes',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        Entrega lunes
+      </button>
+      <button class="nav-item" onclick="irA('jueves',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        Entrega jueves
+      </button>
+      <button class="nav-item" onclick="irA('cobros',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+        </svg>
+        Cobros
+        <span class="nav-badge" id="nb-c" style="background:rgba(231,111,81,.35);">0</span>
+      </button>
+      <button class="nav-item" onclick="irA('reporte',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+        Reporte semanal
+      </button>
+      <button class="nav-item" onclick="irA('clientes',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+          <path d="M16 3.13a4 4 0 010 7.75"/>
+        </svg>
+        Clientes
+      </button>
+    </nav>
+    <div class="sb-user">
+      <img class="sb-avatar" id="sb-avatar" src="" alt="">
+      <div class="sb-uname" id="sb-uname">---</div>
+      <button class="btn-logout" onclick="logout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- TOPBAR MOBILE -->
+    <div class="topbar-m">
+      <button class="hamburger" onclick="toggleSidebar()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <div class="tb-name">Luna Veg</div>
+      <div class="tb-badge" id="tb-sem">---</div>
+    </div>
+
+    <!-- PEDIDOS -->
+    <div class="page active" id="page-pedidos">
+      <div class="page-hdr">
+        <div class="page-title">Pedidos de la semana</div>
+        <div class="page-sub">Domingo - anotar quien confirmo por WhatsApp</div>
+      </div>
+      <div class="stats">
+        <div class="scard"><div class="snum v" id="s-conf">0</div><div class="slbl">confirmados</div></div>
+        <div class="scard"><div class="snum" id="s-tot">Q0</div><div class="slbl">total estimado</div></div>
+        <div class="scard"><div class="snum" id="s-lun">0</div><div class="slbl">almuerzos lunes</div></div>
+        <div class="scard"><div class="snum" id="s-jue">0</div><div class="slbl">almuerzos jueves</div></div>
+      </div>
+      <div class="tbl">
+        <div class="tbl-hdr"><span class="tbl-lbl">Clientes - marcar quien pidio esta semana</span></div>
+        <div id="lista-pedidos"></div>
+      </div>
+      <div class="fbar">
+        <div><div class="flbl">Total semana estimado</div><div class="ftotal" id="ft-p">Q0</div></div>
+        <div class="fbtns"><button class="btn-p" onclick="guardar()">Guardar pedidos</button></div>
+      </div>
+    </div>
+
+    <!-- LUNES -->
+    <div class="page" id="page-lunes">
+      <div class="page-hdr">
+        <div class="page-title">Entrega lunes</div>
+        <div class="page-sub">Marcar almuerzos entregados</div>
+      </div>
+      <div class="vbox">
+        <div>
+          <div class="vlbl">Cuantos viajes hiciste hoy?</div>
+          <div class="vsub" id="cv-lunes">Q0 descontado en envios</div>
+        </div>
+        <div class="vright">
+          <button class="qbtn" onclick="vj('lunes',-1)">-</button>
+          <div class="qnum" id="v-lunes">0</div>
+          <button class="qbtn" onclick="vj('lunes',1)">+</button>
+          <span style="font-size:12px;color:var(--text3);">x Q25</span>
+        </div>
+      </div>
+      <div class="tbl" style="margin-top:16px;">
+        <div class="tbl-hdr"><span class="tbl-lbl">Marcar como entregado</span></div>
+        <div id="lista-lunes"></div>
+      </div>
+      <div class="fbar">
+        <div><div class="flbl">Cobrado lunes</div><div class="ftotal" id="ft-lun">Q0</div></div>
+        <div class="fbtns">
+          <button class="btn-w" onclick="copiar('lunes')">Enviar WhatsApp</button>
+          <button class="btn-p" onclick="guardar()">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- JUEVES -->
+    <div class="page" id="page-jueves">
+      <div class="page-hdr">
+        <div class="page-title">Entrega jueves</div>
+        <div class="page-sub">Marcar almuerzos entregados</div>
+      </div>
+      <div class="vbox">
+        <div>
+          <div class="vlbl">Cuantos viajes hiciste hoy?</div>
+          <div class="vsub" id="cv-jueves">Q0 descontado en envios</div>
+        </div>
+        <div class="vright">
+          <button class="qbtn" onclick="vj('jueves',-1)">-</button>
+          <div class="qnum" id="v-jueves">0</div>
+          <button class="qbtn" onclick="vj('jueves',1)">+</button>
+          <span style="font-size:12px;color:var(--text3);">x Q25</span>
+        </div>
+      </div>
+      <div class="tbl" style="margin-top:16px;">
+        <div class="tbl-hdr"><span class="tbl-lbl">Marcar como entregado</span></div>
+        <div id="lista-jueves"></div>
+      </div>
+      <div class="fbar">
+        <div><div class="flbl">Cobrado jueves</div><div class="ftotal" id="ft-jue">Q0</div></div>
+        <div class="fbtns">
+          <button class="btn-w" onclick="copiar('jueves')">Enviar WhatsApp</button>
+          <button class="btn-p" onclick="guardar()">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- COBROS -->
+    <div class="page" id="page-cobros">
+      <div class="page-hdr">
+        <div class="page-title">Cobros</div>
+        <div class="page-sub">Transferencia - Recurrente con tarjeta</div>
+      </div>
+      <div class="stats">
+        <div class="scard"><div class="snum v" id="c-cob">Q0</div><div class="slbl">cobrado</div></div>
+        <div class="scard"><div class="snum a" id="c-pen">Q0</div><div class="slbl">pendiente</div></div>
+        <div class="scard"><div class="snum" id="c-pag">0</div><div class="slbl">pagaron</div></div>
+        <div class="scard"><div class="snum a" id="c-deb">0</div><div class="slbl">deben</div></div>
+      </div>
+      <div class="tbl">
+        <div class="tbl-hdr"><span class="tbl-lbl">Estado de cobros - toca para cambiar</span></div>
+        <div id="lista-cobros"></div>
+      </div>
+      <div class="fbar">
+        <div><div class="flbl">Total semana</div><div class="ftotal" id="ft-cob">Q0</div></div>
+        <div class="fbtns">
+          <button class="btn-w" onclick="recordatorio()">Enviar cobros WhatsApp</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTE -->
+    <div class="page" id="page-reporte">
+      <div class="page-hdr">
+        <div class="page-title">Reporte semanal</div>
+        <div class="page-sub" id="rep-sub">---</div>
+      </div>
+
+      <!-- COSTOS DE PRODUCCION -->
+      <div class="costos-box" style="margin-top:20px;">
+        <div class="costos-title">Costos de produccion esta semana</div>
+        <div class="costos-row">
+          <span class="costos-lbl">Ingredientes y alimentos</span>
+          <input class="costos-input" type="number" id="costo-ingredientes" placeholder="0" min="0" oninput="actualizarCostos()">
+        </div>
+        <div class="costos-row">
+          <span class="costos-lbl">Gas</span>
+          <input class="costos-input" type="number" id="costo-gas" placeholder="0" min="0" oninput="actualizarCostos()">
+        </div>
+        <div class="costos-row">
+          <span class="costos-lbl">Desechables y empaque</span>
+          <input class="costos-input" type="number" id="costo-desechables" placeholder="0" min="0" oninput="actualizarCostos()">
+        </div>
+        <div class="costos-row">
+          <span class="costos-lbl">Otros gastos</span>
+          <input class="costos-input" type="number" id="costo-otros" placeholder="0" min="0" oninput="actualizarCostos()">
+        </div>
+        <div style="border-top:1.5px solid var(--border);margin-top:8px;padding-top:12px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:13px;font-weight:600;color:var(--text2);">Total costos de produccion</span>
+          <span style="font-size:18px;font-weight:700;color:var(--amber-dark);" id="total-costos-display">Q0</span>
+        </div>
+      </div>
+
+      <div class="rgrid">
+        <div class="rcard">
+          <div class="rtitle">Ventas</div>
+          <div class="rrow"><span class="rlbl">Total almuerzos</span><span class="rval" id="r-alm">0</span></div>
+          <div class="rrow"><span class="rlbl">Total facturado</span><span class="rval" id="r-fac">Q0</span></div>
+          <div class="rrow"><span class="rlbl">Envios descontados</span><span class="ra" id="r-env">-Q0</span></div>
+          <div class="rrow"><span class="rlbl">Costos de produccion</span><span class="ra" id="r-cos">-Q0</span></div>
+          <div class="rrow tr"><span class="rlbl" style="font-weight:600;">Utilidad neta</span><span class="rv" id="r-uti">Q0</span></div>
+        </div>
+        <div class="rcard">
+          <div class="rtitle">Por dia de entrega</div>
+          <div class="rrow"><span class="rlbl">Lunes</span><span class="rval" id="r-lun">Q0</span></div>
+          <div class="rrow"><span class="rlbl">Jueves</span><span class="rval" id="r-jue">Q0</span></div>
+          <div class="rrow"><span class="rlbl">Extras y cobros adicionales</span><span class="rval" id="r-ext">Q0</span></div>
+        </div>
+
+        <!-- DIEZMO + OFRENDA -->
+        <div class="ofrendas-grid">
+          <div class="ofrenda-card diezmo">
+            <div>
+              <div class="of-lbl diezmo">Diezmo</div>
+              <div class="of-sub diezmo">10% de la utilidad neta</div>
+            </div>
+            <div class="of-num diezmo" id="r-die">Q0</div>
+          </div>
+          <div class="ofrenda-card ofrenda">
+            <div>
+              <div class="of-lbl ofrenda">Ofrenda</div>
+              <div class="of-sub ofrenda">5% de la utilidad neta</div>
+            </div>
+            <div class="of-num ofrenda" id="r-ofr">Q0</div>
+          </div>
+        </div>
+
+        <div class="rcard">
+          <div class="rtitle">Cobros</div>
+          <div class="rrow"><span class="rlbl">Cobrado</span><span class="rv" style="font-size:18px;" id="r-cob">Q0</span></div>
+          <div class="rrow"><span class="rlbl">Pendiente</span><span class="ra" id="r-pen">Q0</span></div>
+        </div>
+
+        <div class="rcard full">
+          <div class="rtitle">Por cliente</div>
+          <div id="r-cli"></div>
+        </div>
+
+        <!-- COMPARATIVO -->
+        <div class="rcard full">
+          <div class="rtitle">Comparativo semana anterior</div>
+          <div id="r-comparativo">
+            <div style="text-align:center;color:var(--text3);font-size:13px;padding:16px;">Cargando...</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CLIENTES -->
+    <div class="page" id="page-clientes">
+      <div class="page-hdr">
+        <div class="page-title">Clientes</div>
+        <div class="page-sub">Fijos y nuevos</div>
+      </div>
+      <div class="tbl" style="margin:20px 32px;">
+        <div class="tbl-hdr">
+          <span class="tbl-lbl">Clientes fijos</span>
+          <span class="cl-fixed-badge">Editables</span>
+        </div>
+        <div id="lista-cl-fijos"></div>
+      </div>
+      <div class="tbl" style="margin:0 32px 24px;">
+        <div class="tbl-hdr">
+          <span class="tbl-lbl">Clientes agregados</span>
+          <button class="btn-p" style="font-size:12px;padding:8px 16px;" onclick="abrirModal()">+ Agregar cliente</button>
+        </div>
+        <div id="lista-cl-nuevos"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- BOTTOM NAV MOBILE -->
+<nav class="bnav">
+  <button class="bi active" onclick="irA('pedidos',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/>
+    </svg>
+    Pedidos
+  </button>
+  <button class="bi" onclick="irA('lunes',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+    </svg>
+    Lunes
+  </button>
+  <button class="bi" onclick="irA('jueves',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+    </svg>
+    Jueves
+  </button>
+  <button class="bi" onclick="irA('cobros',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+    </svg>
+    Cobros
+  </button>
+  <button class="bi" onclick="irA('reporte',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+    </svg>
+    Reporte
+  </button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<!-- SCRIPTS - orden importante -->
+<script type="module" src="js/app.js"></script>
+
+</body>
+</html>
