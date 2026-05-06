@@ -8,6 +8,9 @@ import { renderEntregas } from './entregas.js';
 import { renderCobros } from './cobros.js';
 import { renderReporte } from './reporte.js';
 import { renderClientes } from './clientes-ui.js';
+// Al inicio de app.js agregar
+import { renderMenu, } from './menu-ui.js';
+import { cargarMenu, menuSemana } from './menu.js';
 
 const provider = new GoogleAuthProvider();
 
@@ -115,8 +118,14 @@ async function iniciarApp() {
   document.getElementById('costo-desechables').value  = E.costos.desechables  || '';
   document.getElementById('costo-otros').value        = E.costos.otros        || '';
 
-  render();
-  renderClientes();
+ 
+  // Cargar menu semanal
+    await cargarMenu();
+     render();
+        renderMenu();
+        document.getElementById('menu-sub').textContent = 'Semana ' + sem + ' - ' + new Date().getFullYear();
+        document.getElementById('menu-semana-num').textContent = 'Sem. ' + sem;
+    renderClientes();
 }
 
 window.guardar = async () => {

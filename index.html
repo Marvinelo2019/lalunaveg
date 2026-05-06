@@ -154,6 +154,15 @@
         </svg>
         Clientes
       </button>
+      <button class="nav-item" onclick="irA('menu',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+          <rect x="9" y="3" width="6" height="4" rx="1"/>
+          <line x1="9" y1="12" x2="15" y2="12"/>
+          <line x1="9" y1="16" x2="13" y2="16"/>
+        </svg>
+        Menu semanal
+      </button>
     </nav>
     <div class="sb-user">
       <img class="sb-avatar" id="sb-avatar" src="" alt="">
@@ -401,9 +410,42 @@
         <div id="lista-cl-nuevos"></div>
       </div>
     </div>
-
-  </main>
-</div>
+    <!-- MENU SEMANAL -->
+      <div class="page" id="page-menu">
+        <div class="page-hdr">
+          <div class="page-title">Menu semanal</div>
+          <div class="page-sub" id="menu-sub">Semana ---</div>
+        </div>
+        <div class="tbl" style="margin:20px 32px;">
+          <div class="tbl-hdr">
+            <span class="tbl-lbl">Cargar plantilla</span>
+          </div>
+          <div class="plantillas-row">
+            <button class="btn-plantilla" onclick="cargarPlantilla(1)">Semana 1</button>
+            <button class="btn-plantilla" onclick="cargarPlantilla(2)">Semana 2</button>
+            <button class="btn-plantilla" onclick="cargarPlantilla(3)">Semana 3</button>
+            <button class="btn-plantilla" onclick="cargarPlantilla(4)">Semana 4</button>
+            <button class="btn-plantilla" onclick="cargarPlantilla(5)">Semana 5</button>
+          </div>
+        </div>
+        <div class="tbl" style="margin:0 32px 24px;">
+          <div class="tbl-hdr">
+            <span class="tbl-lbl">Platillos de la semana</span>
+          </div>
+          <div id="lista-menu"></div>
+        </div>
+        <div class="fbar">
+          <div>
+            <div class="flbl">Semana actual</div>
+            <div class="ftotal" id="menu-semana-num">---</div>
+          </div>
+          <div class="fbtns">
+            <button class="btn-p" onclick="guardarMenuSemana()">Guardar menu</button>
+          </div>
+        </div>
+      </div>
+        </main>
+      </div>
 
 <!-- BOTTOM NAV MOBILE -->
 <nav class="bnav">
@@ -443,6 +485,7 @@
 
 <!-- SCRIPTS - orden importante -->
 <script type="module" src="js/app.js"></script>
+<script type="module" src="js/menu-ui.js"></script>
 
 </body>
 </html>
