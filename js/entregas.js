@@ -2,6 +2,7 @@ import { E, toast } from './state.js';
 import { todos, SUE } from './clientes.js';
 import { renderReporte } from './reporte.js';
 import { precioConExtras, getDias } from './pedidos.js';
+import { getMenuDia } from './menu.js';
 
 const DIAS_LABEL = {
   lunes: 'Lunes', martes: 'Martes', miercoles: 'Miércoles',
@@ -45,10 +46,13 @@ export function renderEntregas(dia) {
         '<div>' +
           '<div class="pname">' + cl.nombre + '</div>' +
           '<div class="psub">' +
-            cantDia + ' almuerzo' + (cantDia > 1 ? 's' : '') +
-            ' · ' + DIAS_LABEL[dia] +
-            ' · ' + cl.metodo +
-          '</div>' +
+                cantDia + ' almuerzo' + (cantDia > 1 ? 's' : '') +
+                ' · ' + DIAS_LABEL[dia] +
+                ' · ' + cl.metodo +
+                '</div>' +
+               '<div class="pnota" style="color:var(--verde);font-style:normal;font-weight:500;">' +
+                    (getMenuDia(dia) || 'Sin platillo registrado') +
+                    '</div>' +
           (p.nota && p.nota.trim() !== '' ? '<div class="pnota">Nota: ' + p.nota + '</div>' : '') +
           (tieneExtra ? '<div class="pnota">Extra: ' + extraTexto + (extra.nota ? ' (' + extra.nota + ')' : '') + '</div>' : '') +
         '</div>' +
