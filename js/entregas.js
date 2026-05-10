@@ -10,6 +10,7 @@ const DIAS_LABEL = {
 };
 
 export function renderEntregas(dia) {
+   cargarMenu();
   const cont = document.getElementById('lista-' + dia);
   if (!cont) return;
   cont.innerHTML = '';
@@ -78,6 +79,7 @@ export function renderEntregas(dia) {
   document.getElementById('cv-' + dia).textContent = 'Q' + (vj * 25) + ' descontado en envios';
   document.getElementById(dia === 'lunes' ? 'ft-lun' : 'ft-jue').textContent = 'Q' + tot;
 }
+
 
 // ACCIONES
 window.TE = (dia, id) => {
