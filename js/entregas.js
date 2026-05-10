@@ -2,7 +2,7 @@ import { E, toast } from './state.js';
 import { todos, SUE } from './clientes.js';
 import { renderReporte } from './reporte.js';
 import { precioConExtras, getDias } from './pedidos.js';
-import { getMenuDia, cargarMenu } from './menu.js';
+import { getMenuDia } from './menu.js';
 
 const DIAS_LABEL = {
   lunes: 'Lunes', martes: 'Martes', miercoles: 'Miércoles',
@@ -10,7 +10,6 @@ const DIAS_LABEL = {
 };
 
 export function renderEntregas(dia) {
-   cargarMenu();
   const cont = document.getElementById('lista-' + dia);
   if (!cont) return;
   cont.innerHTML = '';

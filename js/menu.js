@@ -57,7 +57,7 @@ export async function cargarMenu() {
     const ano  = new Date().getFullYear();
     const snap = await getDoc(doc(db, 'menus', 'menu-' + sem + '-' + ano));
     if (snap.exists()) {
-      // Modificar el objeto existente, no reemplazarlo
+      const data = snap.data();
       menuSemana.lunes     = data.lunes     || '';
       menuSemana.martes    = data.martes    || '';
       menuSemana.miercoles = data.miercoles || '';
