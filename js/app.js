@@ -129,12 +129,10 @@ async function iniciarApp() {
 }
 
 window.guardar = async () => {
-  E.costos = {
-    ingredientes: parseFloat(document.getElementById('costo-ingredientes').value) || 0,
-    gas:          parseFloat(document.getElementById('costo-gas').value)          || 0,
-    desechables:  parseFloat(document.getElementById('costo-desechables').value)  || 0,
-    otros:        parseFloat(document.getElementById('costo-otros').value)        || 0,
-  };
+  E.costos.ingredientes = parseFloat(document.getElementById('costo-ingredientes').value) || 0;
+  E.costos.gas          = parseFloat(document.getElementById('costo-gas').value)          || 0;
+  E.costos.desechables  = parseFloat(document.getElementById('costo-desechables').value)  || 0;
+  E.costos.otros        = parseFloat(document.getElementById('costo-otros').value)        || 0;
   try {
     await setDoc(doc(db, 'semanas', semKey()), {
       semana: numSem(), ano: new Date().getFullYear(),
@@ -175,7 +173,12 @@ window.actualizarCostos = () => {
   const cosDes = parseFloat(document.getElementById('costo-desechables').value)  || 0;
   const cosOtr = parseFloat(document.getElementById('costo-otros').value)        || 0;
   const total  = cosIng + cosGas + cosDes + cosOtr;
-  E.costos = { ingredientes: cosIng, gas: cosGas, desechables: cosDes, otros: cosOtr };
+
+  E.costos.ingredientes = cosIng;
+  E.costos.gas          = cosGas;
+  E.costos.desechables  = cosDes;
+  E.costos.otros        = cosOtr;
+
   const display = document.getElementById('total-costos-display');
   if (display) display.textContent = 'Q' + total;
   renderReporte();
