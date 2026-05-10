@@ -42,7 +42,7 @@ export const PLANTILLAS = {
 };
 
 // Estado del menu de la semana actual
-export let menuSemana = {
+export const menuSemana = {
   lunes: '', martes: '', miercoles: '', jueves: '', viernes: ''
 };
 
@@ -57,7 +57,12 @@ export async function cargarMenu() {
     const ano  = new Date().getFullYear();
     const snap = await getDoc(doc(db, 'menus', 'menu-' + sem + '-' + ano));
     if (snap.exists()) {
-      Object.assign(menuSemana, snap.data());
+      // Modificar el objeto existente, no reemplazarlo
+      menuSemana.lunes     = data.lunes     || '';
+      menuSemana.martes    = data.martes    || '';
+      menuSemana.miercoles = data.miercoles || '';
+      menuSemana.jueves    = data.jueves    || '';
+      menuSemana.viernes   = data.viernes   || '';
       return true;
     }
   } catch(e) {
