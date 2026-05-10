@@ -13,8 +13,7 @@ export function renderReporte() {
   todos().forEach(cl => {
     const p = E.pedidos[cl.id];
     if (!p || !p.confirmado) return;
-    const utiFooter = document.getElementById('r-uti-footer');
-    if (utiFooter) utiFooter.textContent = 'Q' + uti;
+
     const pt         = precioConExtras(cl, p);
     const extra      = p.extra || {};
     const extraMonto = (extra.cantidad || 0) * SUE[cl.tipo] + (parseFloat(extra.cobro) || 0);
@@ -60,6 +59,10 @@ export function renderReporte() {
   document.getElementById('r-ext').textContent = 'Q' + totalExtras;
   document.getElementById('r-cob').textContent = 'Q' + cob;
   document.getElementById('r-pen').textContent = 'Q' + pen;
+
+  // Footer utilidad
+  const utiFooter = document.getElementById('r-uti-footer');
+  if (utiFooter) utiFooter.textContent = 'Q' + uti;
 
   const tcDisplay = document.getElementById('total-costos-display');
   if (tcDisplay) tcDisplay.textContent = 'Q' + totalCostos;
@@ -123,7 +126,7 @@ async function cargarComparativo(facActual, utiActual, almActual, costosActual) 
     utiAnt = Math.round((facAnt - envAnt - costosAnt) * 100) / 100;
 
     const fila = (lbl, actual, anterior) => {
-      const diff = Math.round((actual - anterior) * 100) / 100;
+      const diff   = Math.round((actual - anterior) * 100) / 100;
       const pct    = anterior > 0 ? Math.round((diff / anterior) * 100) : 0;
       const color  = diff >= 0 ? 'var(--verde)' : 'var(--amber-dark)';
       const flecha = diff >= 0 ? '↑' : '↓';
@@ -146,10 +149,10 @@ async function cargarComparativo(facActual, utiActual, almActual, costosActual) 
         '<span>Esta sem.</span>' +
         '<span>Diferencia</span>' +
       '</div>' +
-      fila('Facturado',    facActual,    facAnt) +
-      fila('Utilidad neta', utiActual,  utiAnt) +
-      fila('Almuerzos',    almActual,    almAnt) +
-      fila('Costos',       costosActual, costosAnt);
+      fila('Facturado',     facActual,    facAnt) +
+      fila('Utilidad neta', utiActual,    utiAnt) +
+      fila('Almuerzos',     almActual,    almAnt) +
+      fila('Costos',        costosActual, costosAnt);
 
   } catch(e) {
     cont.innerHTML = '<div style="text-align:center;color:var(--text3);font-size:13px;padding:16px;">No se pudo cargar el comparativo.</div>';
