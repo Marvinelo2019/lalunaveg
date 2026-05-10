@@ -42,7 +42,7 @@ export function renderReporte() {
   const totalCostos = cosIng + cosGas + cosDes + cosOtr;
 
   const env = ((E.viajes.lunes || 0) + (E.viajes.jueves || 0)) * 25;
-  const uti = fac - env - totalCostos;
+  const uti = Math.round((fac - env - totalCostos) * 100) / 100;
   const die = Math.round(uti * 0.10);
   const ofr = Math.round(uti * 0.05);
 
