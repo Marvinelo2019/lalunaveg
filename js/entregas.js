@@ -2,7 +2,7 @@ import { E, toast } from './state.js';
 import { todos, SUE } from './clientes.js';
 import { renderReporte } from './reporte.js';
 import { precioConExtras, getDias } from './pedidos.js';
-import { getMenuDia } from './menu.js';
+import { getMenuDia, cargarMenu } from './menu.js';
 
 const DIAS_LABEL = {
   lunes: 'Lunes', martes: 'Martes', miercoles: 'Miércoles',
