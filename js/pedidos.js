@@ -9,7 +9,10 @@ const DIAS_LABEL = { lunes: 'Lun', martes: 'Mar', miercoles: 'Mié', jueves: 'Ju
 
 
 export function getDias(p) {
-  if (p.dias) return p.dias;
+  if (p.dias) {
+    const total = Object.values(p.dias).reduce((s, v) => s + v, 0);
+    if (total > 0) return p.dias;
+  }
   const cant = p.cantidad || 1;
   return { lunes: cant, martes: 0, miercoles: 0, jueves: cant, viernes: 0 };
 }
