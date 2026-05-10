@@ -13,7 +13,8 @@ export function renderReporte() {
   todos().forEach(cl => {
     const p = E.pedidos[cl.id];
     if (!p || !p.confirmado) return;
-
+    const utiFooter = document.getElementById('r-uti-footer');
+    if (utiFooter) utiFooter.textContent = 'Q' + uti;
     const pt         = precioConExtras(cl, p);
     const extra      = p.extra || {};
     const extraMonto = (extra.cantidad || 0) * SUE[cl.tipo] + (parseFloat(extra.cobro) || 0);
@@ -119,10 +120,10 @@ async function cargarComparativo(facActual, utiActual, almActual, costosActual) 
     }
 
     const envAnt = (((d.viajes || {}).lunes || 0) + ((d.viajes || {}).jueves || 0)) * 25;
-    utiAnt = facAnt - envAnt - costosAnt;
+    utiAnt = Math.round((facAnt - envAnt - costosAnt) * 100) / 100;
 
     const fila = (lbl, actual, anterior) => {
-      const diff   = actual - anterior;
+      const diff = Math.round((actual - anterior) * 100) / 100;
       const pct    = anterior > 0 ? Math.round((diff / anterior) * 100) : 0;
       const color  = diff >= 0 ? 'var(--verde)' : 'var(--amber-dark)';
       const flecha = diff >= 0 ? '↑' : '↓';
