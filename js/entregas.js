@@ -9,6 +9,11 @@ const DIAS_LABEL = {
   jueves: 'Jueves', viernes: 'Viernes'
 };
 
+const DIAS_ENTREGA = {
+  lunes:  ['lunes', 'martes', 'miercoles'],
+  jueves: ['jueves', 'viernes']
+};
+
 export function renderEntregas(dia) {
   const cont = document.getElementById('lista-' + dia);
   if (!cont) return;
@@ -20,9 +25,10 @@ export function renderEntregas(dia) {
     const p = E.pedidos[cl.id];
     if (!p || !p.confirmado) return;
 
-    // Solo mostrar si tiene almuerzos este dia
-    const dias    = getDias(p);
-    const cantDia = dias[dia] || 0;
+    // Solo mostrar si tiene almuerzos en los dias de esta entrega
+    const dias        = getDias(p);
+    const diasEntrega = DIAS_ENTREGA[dia] || [dia];
+    const cantDia     = diasEntrega.reduce((s, d) => s + (dias[d] || 0), 0);
     if (cantDia === 0) return;
 
     const e = E[dia][cl.id] || { entregado: false };
@@ -39,20 +45,22 @@ export function renderEntregas(dia) {
       .join(' + ')
     ) : '';
 
+    const detalleDias = diasEntrega
+      .filter(d => (dias[d] || 0) > 0)
+      .map(d => {
+        const platillo = getMenuDia(d);
+        return DIAS_LABEL[d] + ': ' + dias[d] + (platillo ? ' · ' + platillo : '');
+      })
+      .join('<br>');
+
     const d = document.createElement('div');
     d.innerHTML =
       '<div class="prow">' +
         '<div class="av av-' + cl.tipo + '">' + cl.ini + '</div>' +
         '<div>' +
           '<div class="pname">' + cl.nombre + '</div>' +
-          '<div class="psub">' +
-                cantDia + ' almuerzo' + (cantDia > 1 ? 's' : '') +
-                ' · ' + DIAS_LABEL[dia] +
-                ' · ' + cl.metodo +
-                '</div>' +
-               '<div class="pnota" style="color:var(--verde);font-style:normal;font-weight:500;">' +
-                    (getMenuDia(dia) || 'Sin platillo registrado') +
-                    '</div>' +
+          '<div class="psub">' + cl.metodo + ' · ' + cantDia + ' almuerzo' + (cantDia > 1 ? 's' : '') + '</div>' +
+          '<div style="font-size:12px;color:var(--text2);margin-top:4px;line-height:1.8;">' + detalleDias + '</div>' +
           (p.nota && p.nota.trim() !== '' ? '<div class="pnota">Nota: ' + p.nota + '</div>' : '') +
           (tieneExtra ? '<div class="pnota">Extra: ' + extraTexto + (extra.nota ? ' (' + extra.nota + ')' : '') + '</div>' : '') +
         '</div>' +
@@ -99,13 +107,14 @@ window.copiar = dia => {
   todos().forEach(cl => {
     const p = E.pedidos[cl.id];
     if (!p || !p.confirmado) return;
-    const dias    = getDias(p);
-    const cantDia = dias[dia] || 0;
+    const dias        = getDias(p);
+    const diasEntrega = DIAS_ENTREGA[dia] || [dia];
+    const cantDia     = diasEntrega.reduce((s, d) => s + (dias[d] || 0), 0);
     if (cantDia === 0) return;
     const e  = E[dia][cl.id];
     const pt = precioConExtras(cl, p);
     let linea = (e && e.entregado ? 'Entregado' : 'Pendiente') + ' - ' + cl.nombre;
-    linea += ' (' + cantDia + ' almuerzo' + (cantDia > 1 ? 's' : '') + ')';
+    linea += ' (' + diasEntrega.filter(d => (dias[d] || 0) > 0).map(d => dias[d] + ' alm. ' + DIAS_LABEL[d]).join(' · ') + ')';
     linea += ' - Q' + pt;
     if (p.nota && p.nota.trim() !== '') linea += ' · ' + p.nota;
     const extra = p.extra || {};

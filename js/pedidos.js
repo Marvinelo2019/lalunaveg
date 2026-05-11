@@ -53,7 +53,15 @@ export function renderPedidos() {
   cont.innerHTML = '';
   let tot = 0, conf = 0, totalAlm = 0;
 
-  todos().forEach(cl => {
+  const clientesOrdenados = todos().sort((a, b) => {
+    const pA = E.pedidos[a.id];
+    const pB = E.pedidos[b.id];
+    const confA = pA && pA.confirmado ? 1 : 0;
+    const confB = pB && pB.confirmado ? 1 : 0;
+    return confB - confA;
+  });
+  let separadorAgregado = false;
+  clientesOrdenados.forEach(cl => {
     const p = E.pedidos[cl.id] || {
       confirmado: false,
       planTipo: 'semanal',
@@ -70,6 +78,15 @@ export function renderPedidos() {
     const almTotal   = totalAlmuerzos(p);
     const tieneExtra = p.extra.activo && ((p.extra.cantidad || 0) > 0 || (p.extra.cobro || 0) > 0);
     const notaVisible = p.nota && p.nota.trim() !== '';
+    const notaBadge = notaVisible
+      ? '<span style="display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;background:var(--amber-pale);color:var(--amber-dark);padding:2px 7px;border-radius:20px;margin-left:6px;">✎ nota</span>'
+      : '';
+    const diasMarcados = DIAS.filter(d => (p.dias[d] || 0) > 0)
+      .map(d => DIAS_LABEL[d] + (p.dias[d] > 1 ? ' x' + p.dias[d] : ''))
+      .join(' · ');
+    const diasHtml = diasMarcados
+      ? '<div style="font-size:11px;color:var(--text3);margin-top:3px;">' + diasMarcados + '</div>'
+      : '';
 
     if (p.confirmado) { tot += pt; conf++; totalAlm += almTotal; }
 
@@ -97,14 +114,22 @@ export function renderPedidos() {
   ? (p.cantidad > 1 ? 'plan x' + p.cantidad : 'plan semanal')
   : 'suelto · ' + Object.values(getDias(p)).reduce((s,v)=>s+v,0) + ' alm.';
 
+    if (!p.confirmado && !separadorAgregado) {
+      separadorAgregado = true;
+      const sep = document.createElement('div');
+      sep.style.cssText = 'padding:8px 20px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;background:var(--bg);border-bottom:1px solid var(--border);';
+      sep.textContent = 'Sin confirmar';
+      cont.appendChild(sep);
+    }
+
     const d = document.createElement('div');
     d.innerHTML =
       '<div class="crow">' +
         '<div class="av av-' + cl.tipo + '">' + cl.ini + '</div>' +
         '<div>' +
-          '<div class="cname">' + cl.nombre + '</div>' +
+          '<div class="cname">' + cl.nombre + notaBadge + '</div>' +
           '<span class="ctag tag-' + cl.tipo + '">' + TAG[cl.tipo] + '</span>' +
-          (notaVisible ? '<div class="nota-badge">' + p.nota + '</div>' : '') +
+          diasHtml +
           '<div class="ptoggle">' +
             '<button class="popt ' + (p.planTipo === 'semanal' ? 'active' : '') + '" onclick="SP(\'' + cl.id + '\',\'semanal\')">Plan semanal</button>' +
             '<button class="popt ' + (p.planTipo === 'suelto'  ? 'active' : '') + '" onclick="SP(\'' + cl.id + '\',\'suelto\')">Por almuerzo</button>' +
@@ -149,10 +174,49 @@ export function renderPedidos() {
 
   document.getElementById('s-conf').textContent = conf;
   document.getElementById('s-tot').textContent  = 'Q' + tot;
-  document.getElementById('s-lun').textContent  = totalAlm;
-  document.getElementById('s-jue').textContent  = totalAlm;
+
   document.getElementById('ft-p').textContent   = 'Q' + tot;
   document.getElementById('nb-p').textContent   = conf;
+
+  const totalesDias = { lunes: 0, martes: 0, miercoles: 0, jueves: 0, viernes: 0 };
+  const DIAS_TODOS  = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
+  const DIAS_LBL    = { lunes: 'Lun', martes: 'Mar', miercoles: 'Mié', jueves: 'Jue', viernes: 'Vie' };
+
+  todos().forEach(cl => {
+    const p = E.pedidos[cl.id];
+    if (!p || !p.confirmado) return;
+    const dias = getDias(p);
+    DIAS_TODOS.forEach(d => { totalesDias[d] += (dias[d] || 0); });
+  });
+
+  const resumen = document.getElementById('resumen-dias');
+  if (resumen) {
+    resumen.innerHTML = DIAS_TODOS.map(d =>
+      '<div class="resumen-dia-card ' + (totalesDias[d] > 0 ? 'activo' : '') + '">' +
+        '<div class="resumen-dia-lbl">' + DIAS_LBL[d] + '</div>' +
+        '<div class="resumen-dia-num">' + totalesDias[d] + '</div>' +
+        '<div class="resumen-dia-txt">almuerzos</div>' +
+      '</div>'
+    ).join('');
+  }
+
+  const totalEntregaLunes  = (totalesDias.lunes || 0) + (totalesDias.martes || 0) + (totalesDias.miercoles || 0);
+  const totalEntregaJueves = (totalesDias.jueves || 0) + (totalesDias.viernes || 0);
+
+  const resumenEntregas = document.getElementById('resumen-entregas');
+  if (resumenEntregas) {
+    resumenEntregas.innerHTML =
+      '<div class="entrega-sum">' +
+        '<span class="entrega-sum-lbl">Entrega lunes</span>' +
+        '<span class="entrega-sum-num">' + totalEntregaLunes + '</span>' +
+        '<span class="entrega-sum-txt">almuerzos · Lun + Mar + Mié</span>' +
+      '</div>' +
+      '<div class="entrega-sum">' +
+        '<span class="entrega-sum-lbl">Entrega jueves</span>' +
+        '<span class="entrega-sum-num">' + totalEntregaJueves + '</span>' +
+        '<span class="entrega-sum-txt">almuerzos · Jue + Vie</span>' +
+      '</div>';
+  }
 }
 
 // ACCIONES
