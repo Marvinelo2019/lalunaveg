@@ -8,15 +8,23 @@ export const E = {
   costos:  { ingredientes: 0, gas: 0, desechables: 0, otros: 0 }
 };
 
+function getNumSemana(fecha) {
+  const inicioAnio = new Date(fecha.getFullYear(), 0, 1);
+  const diaSemana = inicioAnio.getDay();
+  const diff = fecha - inicioAnio;
+  const diasTranscurridos = Math.floor(diff / 86400000);
+  return Math.ceil((diasTranscurridos + diaSemana + 1) / 7);
+}
+
 export function semKey() {
-  const n = new Date(), s = new Date(n.getFullYear(), 0, 1);
-  const w = Math.ceil(((n - s) / 86400000 + s.getDay() + 1) / 7);
+  const n = new Date();
+  const w = getNumSemana(n);
   return 'semana-' + w + '-' + n.getFullYear();
 }
-//window.E = E;
+
 export function numSem() {
-  const n = new Date(), s = new Date(n.getFullYear(), 0, 1);
-  return Math.ceil(((n - s) / 86400000 + s.getDay() + 1) / 7);
+  const n = new Date();
+  return getNumSemana(n);
 }
 
 export function toast(m) {

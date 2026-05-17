@@ -11,6 +11,7 @@ import { renderClientes } from './clientes-ui.js';
 // Al inicio de app.js agregar
 import { renderMenu, } from './menu-ui.js';
 import { cargarMenu, menuSemana } from './menu.js';
+import { renderReporteMensual } from './reporte-mensual-ui.js';
 
 const provider = new GoogleAuthProvider();
 
@@ -155,6 +156,7 @@ window.irA = (p, btn) => {
   document.querySelectorAll('.nav-item,.bi').forEach(x => x.classList.remove('active'));
   document.getElementById('page-' + p).classList.add('active');
   document.querySelectorAll(`[onclick*="irA('${p}"]`).forEach(x => x.classList.add('active'));
+  if (p === 'reporte-mensual') renderReporteMensual();
   window.scrollTo(0, 0);
   cerrarSidebar();
 };

@@ -163,6 +163,14 @@
         </svg>
         Menu semanal
       </button>
+      <button class="nav-item" onclick="irA('reporte-mensual',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+        Reporte mensual
+      </button>
     </nav>
     <div class="sb-user">
       <img class="sb-avatar" id="sb-avatar" src="" alt="">
@@ -456,6 +464,26 @@
           </div>
         </div>
       </div>
+      <!-- REPORTE MENSUAL -->
+          <div class="page" id="page-reporte-mensual">
+            <div class="page-hdr">
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div>
+                  <div class="page-title">Reporte mensual</div>
+                  <div class="page-sub" id="rm-titulo">---</div>
+                </div>
+                <div style="display:flex;gap:8px;">
+                  <button class="btn-o" onclick="mesAnterior()">&#8592; Mes anterior</button>
+                  <button class="btn-o" onclick="mesSiguiente()">Mes siguiente &#8594;</button>
+                </div>
+              </div>
+            </div>
+            <div style="padding:20px 32px 32px;" id="reporte-mensual-cont">
+              <div style="text-align:center;padding:60px;color:var(--text3);">
+                Selecciona este mes para ver el reporte.
+              </div>
+            </div>
+          </div>
         </main>
       </div>
 
@@ -496,6 +524,8 @@
 <div class="toast" id="toast"></div>
 
 <!-- SCRIPTS - orden importante -->
+<script type="module" src="js/reporte-mensual.js"></script>
+<script type="module" src="js/reporte-mensual-ui.js"></script>
 <script type="module" src="js/app.js"></script>
 <script type="module" src="js/menu-ui.js"></script>
 
