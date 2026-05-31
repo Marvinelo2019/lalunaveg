@@ -12,6 +12,7 @@ import { renderClientes } from './clientes-ui.js';
 import { renderMenu, } from './menu-ui.js';
 import { cargarMenu, menuSemana } from './menu.js';
 import { renderReporteMensual } from './reporte-mensual-ui.js';
+import { renderDashboard } from './dashboard-ui.js';
 
 const provider = new GoogleAuthProvider();
 
@@ -157,6 +158,7 @@ window.irA = (p, btn) => {
   document.getElementById('page-' + p).classList.add('active');
   document.querySelectorAll(`[onclick*="irA('${p}"]`).forEach(x => x.classList.add('active'));
   if (p === 'reporte-mensual') renderReporteMensual();
+  if (p === 'dashboard') renderDashboard();
   window.scrollTo(0, 0);
   cerrarSidebar();
 };
@@ -184,4 +186,5 @@ window.actualizarCostos = () => {
   const display = document.getElementById('total-costos-display');
   if (display) display.textContent = 'Q' + total;
   renderReporte();
+  renderDashboard();
 };

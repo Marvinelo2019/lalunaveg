@@ -113,6 +113,17 @@
       <div class="sb-date" id="sb-fecha">---</div>
     </div>
     <nav class="sb-nav">
+
+      <button class="nav-item active" onclick="irA('dashboard',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <rect x="3" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+          <rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        Dashboard
+      </button>
+
       <button class="nav-item active" onclick="irA('pedidos',this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
           <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/>
@@ -201,6 +212,16 @@
       <div class="tb-badge" id="tb-sem">---</div>
     </div>
 
+      <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-hdr">
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub">Vista general de la semana</div>
+      </div>
+      <div style="padding:20px 32px 32px;" id="dashboard-cont">
+        <div style="text-align:center;padding:60px;color:var(--text3);">Cargando...</div>
+      </div>
+    </div>
     <!-- PEDIDOS -->
     <div class="page active" id="page-pedidos">
       <div class="page-hdr">
@@ -528,6 +549,8 @@
 <script type="module" src="js/reporte-mensual-ui.js"></script>
 <script type="module" src="js/app.js"></script>
 <script type="module" src="js/menu-ui.js"></script>
+<script type="module" src="js/dashboard.js"></script>
+<script type="module" src="js/dashboard-ui.js"></script>
 
 </body>
 </html>
