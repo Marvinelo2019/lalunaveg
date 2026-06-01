@@ -29,9 +29,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .shell{display:flex;min-height:100vh;}
 .sidebar{width:var(--sw);background:var(--verde);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:transform .25s;}
 .sb-brand{padding:26px 20px 22px;border-bottom:1px solid rgba(255,255,255,.1);}
-.sb-mark{width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display';font-size:20px;color:white;margin-bottom:10px;}
-.sb-name{font-family:'DM Serif Display';font-size:20px;color:white;}
-.sb-sub2{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px;}
+/*.sb-mark{width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display';font-size:20px;color:white;margin-bottom:10px;}
+/*.sb-name{font-family:'DM Serif Display';font-size:20px;color:white;}
+/*.sb-sub2{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px;}*/
 .sb-week{padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.1);}
 .sb-wlbl{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.08em;}
 .sb-wval{font-size:15px;font-weight:600;color:white;margin-top:3px;}
