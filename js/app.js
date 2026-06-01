@@ -128,6 +128,7 @@ async function iniciarApp() {
         document.getElementById('menu-sub').textContent = 'Semana ' + sem + ' - ' + new Date().getFullYear();
         document.getElementById('menu-semana-num').textContent = 'Sem. ' + sem;
     renderClientes();
+    renderDashboard();
 }
 
 window.guardar = async () => {
@@ -186,5 +187,5 @@ window.actualizarCostos = () => {
   const display = document.getElementById('total-costos-display');
   if (display) display.textContent = 'Q' + total;
   renderReporte();
-  renderDashboard();
+  
 };
