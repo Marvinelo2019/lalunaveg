@@ -1,4 +1,4 @@
-import { E } from './state.js';
+import { E, numSem } from './state.js';
 import { todos, SUE } from './clientes.js';
 import { db } from './firebase-config.js';
 import { getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
@@ -6,12 +6,49 @@ import { precioConExtras, getDias } from './pedidos.js';
 
 const DIAS = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
 
-export function renderReporte() {
+    // Navegacion de semanas
+    let semanaViendo = null; // null = semana actual
+    let anioViendo   = null;
+
+      export function getSemanaViendo() {
+      return { sem: semanaViendo, anio: anioViendo };
+    }
+
+    async function cargarDatosSemana(numSem, anio) {
+      if (!numSem) return null; // semana actual usa E
+      try {
+        const snap = await getDoc(doc(db, 'semanas', 'semana-' + numSem + '-' + anio));
+        if (snap.exists()) return snap.data();
+      } catch(e) { console.log('Error cargando semana', numSem); }
+      return null;
+    }
+
+export async function renderReporte() {
+  const cont = document.getElementById('r-cli');
+
+  // Determinar si vemos semana actual o pasada
+  const viendo  = semanaViendo;
+  const anio    = anioViendo || new Date().getFullYear();
+  const esActual = !viendo;
+
+  // Cargar datos
+  let datos = null;
+  if (!esActual) {
+    datos = await cargarDatosSemana(viendo, anio);
+  }
+
+  const pedidos = datos ? datos.pedidos  : E.pedidos;
+  const cobros  = datos ? datos.cobros   : E.cobros;
+  const lunes   = datos ? datos.lunes    : E.lunes;
+  const jueves  = datos ? datos.jueves   : E.jueves;
+  const viajes  = datos ? datos.viajes   : E.viajes;
+  const costos  = datos ? datos.costos   : E.costos;
+
   let fac = 0, alm = 0, cob = 0, pen = 0, tL = 0, tJ = 0, totalExtras = 0;
   const cli = [];
 
   todos().forEach(cl => {
-    const p = E.pedidos[cl.id];
+    const p = pedidos && pedidos[cl.id];
     if (!p || !p.confirmado) return;
 
     const pt         = precioConExtras(cl, p);
@@ -27,21 +64,20 @@ export function renderReporte() {
     totalExtras += extraMonto;
     cli.push({ n: cl.nombre, m: pt, ext: extraMonto });
 
-    const co = E.cobros[cl.id];
+    const co = cobros && cobros[cl.id];
     if (co && co.pagado) cob += pt; else pen += pt;
 
-    if (E.lunes[cl.id]  && E.lunes[cl.id].entregado)  tL += pt;
-    if (E.jueves[cl.id] && E.jueves[cl.id].entregado) tJ += pt;
+    if (lunes  && lunes[cl.id]  && lunes[cl.id].entregado)  tL += pt;
+    if (jueves && jueves[cl.id] && jueves[cl.id].entregado) tJ += pt;
   });
 
-  // Costos
-  const cosIng = parseFloat(E.costos.ingredientes) || 0;
-  const cosGas = parseFloat(E.costos.gas)          || 0;
-  const cosDes = parseFloat(E.costos.desechables)  || 0;
-  const cosOtr = parseFloat(E.costos.otros)        || 0;
+  const cosIng = parseFloat(costos && costos.ingredientes) || 0;
+  const cosGas = parseFloat(costos && costos.gas)          || 0;
+  const cosDes = parseFloat(costos && costos.desechables)  || 0;
+  const cosOtr = parseFloat(costos && costos.otros)        || 0;
   const totalCostos = cosIng + cosGas + cosDes + cosOtr;
 
-  const env = ((E.viajes.lunes || 0) + (E.viajes.jueves || 0)) * 25;
+  const env = (((viajes && viajes.lunes) || 0) + ((viajes && viajes.jueves) || 0)) * 25;
   const uti = Math.round((fac - env - totalCostos) * 100) / 100;
   const die = Math.round(uti * 0.10);
   const ofr = Math.round(uti * 0.05);
@@ -60,12 +96,17 @@ export function renderReporte() {
   document.getElementById('r-cob').textContent = 'Q' + cob;
   document.getElementById('r-pen').textContent = 'Q' + pen;
 
-  // Footer utilidad
   const utiFooter = document.getElementById('r-uti-footer');
   if (utiFooter) utiFooter.textContent = 'Q' + uti;
 
   const tcDisplay = document.getElementById('total-costos-display');
   if (tcDisplay) tcDisplay.textContent = 'Q' + totalCostos;
+
+  // Siempre llenar los inputs con los valores de la semana viendo
+  document.getElementById('costo-ingredientes').value = cosIng || '';
+  document.getElementById('costo-gas').value          = cosGas || '';
+  document.getElementById('costo-desechables').value  = cosDes || '';
+  document.getElementById('costo-otros').value        = cosOtr || '';
 
   document.getElementById('r-cli').innerHTML = cli.map(x =>
     '<div class="rrow">' +
@@ -76,9 +117,55 @@ export function renderReporte() {
     '</div>'
   ).join('');
 
-  // Comparativo semana anterior
+  // Indicador semana viendo
+  const repSub = document.getElementById('rep-sub');
+  if (repSub) {
+    repSub.textContent = esActual
+      ? 'Semana ' + numSem() + ' - ' + new Date().getFullYear() + ' (semana actual)'
+      : 'Semana ' + viendo + ' - ' + anio + ' (solo lectura)';
+  }
+
+  // Costos deshabilitados si es semana pasada
+  const costsDisabled = !esActual;
+  ['costo-ingredientes','costo-gas','costo-desechables','costo-otros'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.disabled = costsDisabled;
+  });
+
   cargarComparativo(fac, uti, alm, totalCostos);
 }
+
+// Navegacion
+window.semanaAnteriorReporte = () => {
+  const n   = new Date();
+  const s   = new Date(n.getFullYear(), 0, 1);
+  const actual = numSem();
+  if (!semanaViendo) {
+    semanaViendo = actual - 1;
+    anioViendo   = new Date().getFullYear();
+  } else {
+    semanaViendo--;
+  }
+  if (semanaViendo < 1) {
+    semanaViendo = 52;
+    anioViendo--;
+  }
+  renderReporte();
+};
+
+window.semanaSiguienteReporte = () => {
+  if (!semanaViendo) return; // ya estamos en semana actual
+  semanaViendo++;
+  if (semanaViendo > 52) {
+    semanaViendo = 1;
+    anioViendo++;
+  }
+  if (semanaViendo === numSem() && anioViendo === new Date().getFullYear()) {
+    semanaViendo = null;
+    anioViendo   = null;
+  }
+  renderReporte();
+};
 
 async function cargarComparativo(facActual, utiActual, almActual, costosActual) {
   const cont = document.getElementById('r-comparativo');

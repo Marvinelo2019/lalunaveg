@@ -172,7 +172,7 @@ window.cerrarSidebar = () => {
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('overlay').style.display = 'none';
 };
-window.actualizarCostos = () => {
+window.actualizarCostos = async () => {
   const cosIng = parseFloat(document.getElementById('costo-ingredientes').value) || 0;
   const cosGas = parseFloat(document.getElementById('costo-gas').value)          || 0;
   const cosDes = parseFloat(document.getElementById('costo-desechables').value)  || 0;
@@ -186,6 +186,6 @@ window.actualizarCostos = () => {
 
   const display = document.getElementById('total-costos-display');
   if (display) display.textContent = 'Q' + total;
-  renderReporte();
+  await renderReporte();
   
 };

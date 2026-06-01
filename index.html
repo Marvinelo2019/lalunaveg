@@ -352,10 +352,18 @@
 
     <!-- REPORTE -->
     <div class="page" id="page-reporte">
-      <div class="page-hdr">
-        <div class="page-title">Reporte semanal</div>
-        <div class="page-sub" id="rep-sub">---</div>
+    <div class="page-hdr">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div class="page-title">Reporte semanal</div>
+          <div class="page-sub" id="rep-sub">---</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-o" onclick="semanaAnteriorReporte()">&#8592; Semana anterior</button>
+          <button class="btn-o" onclick="semanaSiguienteReporte()">Semana siguiente &#8594;</button>
+        </div>
       </div>
+    </div>
 
       <!-- COSTOS DE PRODUCCION -->
       <div class="costos-box" style="margin-top:20px;">
