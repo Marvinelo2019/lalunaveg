@@ -1,5 +1,6 @@
 import { db } from './firebase-config.js';
 import { getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { getOrgId } from './state.js';
 import { todos, SUE } from './clientes.js';
 import { precioConExtras, getDias } from './pedidos.js';
 
@@ -73,7 +74,7 @@ export async function cargarReporteMensual(anio, mes) {
   for (const numSem of semanas) {
     const key  = 'semana-' + numSem + '-' + anio;
     try {
-      const snap = await getDoc(doc(db, 'semanas', key));
+      const snap = await getDoc(doc(db, 'organizaciones', getOrgId(), 'semanas', key));
       if (snap.exists()) {
         const datos = procesarSemana(snap.data(), numSem);
         resultados.push(datos);

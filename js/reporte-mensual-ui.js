@@ -1,5 +1,5 @@
 import { cargarReporteMensual, MESES } from './reporte-mensual.js';
-import { toast } from './state.js';
+import { toast, getOrgId } from './state.js';
 
 let mesActual = new Date().getMonth();
 let anioActual = new Date().getFullYear();
@@ -168,7 +168,7 @@ async function calcularTopClientes(semanas) {
   for (const s of semanas) {
     if (s.facturado === 0) continue;
     const key  = 'semana-' + s.semana + '-' + anio;
-    const snap = await getDoc(doc(db, 'semanas', key));
+    const snap = await getDoc(doc(db, 'organizaciones', getOrgId(), 'semanas', key));
     if (!snap.exists()) continue;
     const data = snap.data();
     if (!data.pedidos) continue;

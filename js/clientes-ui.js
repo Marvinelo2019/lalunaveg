@@ -1,7 +1,7 @@
 import { db } from './firebase-config.js';
 import { doc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { CL_FIJOS, CL_NUEVOS, setCLNuevos, TAG, TNOMBRE } from './clientes.js';
-import { toast } from './state.js';
+import { toast, getOrgId } from './state.js';
 import { render } from './app.js';
 
 export function renderClientes() {
@@ -79,7 +79,7 @@ window.agregarCliente = async () => {
   const base = tipo === '90' ? 2 : 1;
 
   try {
-    await setDoc(doc(db, 'clientes-nuevos', id), { id, nombre, ini, tipo, metodo, base });
+    await setDoc(doc(db, 'organizaciones', getOrgId(), 'clientes-nuevos', id), { id, nombre, ini, tipo, metodo, base });
     CL_NUEVOS.push({ id, nombre, ini, tipo, metodo, base, fid: id, fijo: false });
     cerrarModal();
     render();
@@ -93,7 +93,7 @@ window.agregarCliente = async () => {
 window.eliminarCliente = async fid => {
   if (!confirm('Eliminar este cliente?')) return;
   try {
-    await deleteDoc(doc(db, 'clientes-nuevos', fid));
+    await deleteDoc(doc(db, 'organizaciones', getOrgId(), 'clientes-nuevos', fid));
     setCLNuevos(CL_NUEVOS.filter(c => c.fid !== fid));
     render();
     renderClientes();
@@ -128,7 +128,7 @@ window.guardarEdicion = async () => {
   cl.metodo = nuevoMetodo;
 
   try {
-    await setDoc(doc(db, 'clientes-edits', id), {
+    await setDoc(doc(db, 'organizaciones', getOrgId(), 'clientes-edits', id), {
       id, tipo: nuevoTipo, metodo: nuevoMetodo,
       updatedAt: new Date().toISOString()
     }, { merge: true });

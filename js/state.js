@@ -1,4 +1,3 @@
-// Estado global compartido - sin dependencias
 export const E = {
   pedidos: {},
   lunes:   {},
@@ -8,23 +7,22 @@ export const E = {
   costos:  { ingredientes: 0, gas: 0, desechables: 0, otros: 0 }
 };
 
-function getNumSemana(fecha) {
-  const inicioAnio = new Date(fecha.getFullYear(), 0, 1);
-  const diaSemana = inicioAnio.getDay();
-  const diff = fecha - inicioAnio;
-  const diasTranscurridos = Math.floor(diff / 86400000);
-  return Math.ceil((diasTranscurridos + diaSemana + 1) / 7);
-}
+export let ORG_ID = null;
+export const setOrgId  = (id) => { ORG_ID = id; };
+export const getOrgId  = ()   => ORG_ID;
 
 export function semKey() {
-  const n = new Date();
-  const w = getNumSemana(n);
-  return 'semana-' + w + '-' + n.getFullYear();
+  const n = new Date(), s = new Date(n.getFullYear(), 0, 1);
+  const diaSemana = s.getDay();
+  const diasTranscurridos = Math.floor((n - s) / 86400000);
+  return 'semana-' + Math.ceil((diasTranscurridos + diaSemana + 1) / 7) + '-' + n.getFullYear();
 }
 
 export function numSem() {
-  const n = new Date();
-  return getNumSemana(n);
+  const n = new Date(), s = new Date(n.getFullYear(), 0, 1);
+  const diaSemana = s.getDay();
+  const diasTranscurridos = Math.floor((n - s) / 86400000);
+  return Math.ceil((diasTranscurridos + diaSemana + 1) / 7);
 }
 
 export function toast(m) {
@@ -33,3 +31,5 @@ export function toast(m) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
+
+window.E = E;

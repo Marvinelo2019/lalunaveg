@@ -1,6 +1,6 @@
 import { db } from './firebase-config.js';
 import { doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-import { numSem } from './state.js';
+import { numSem, getOrgId } from './state.js';
 
 // PLANTILLAS DE LOS 5 MENUS
 export const PLANTILLAS = {
@@ -55,7 +55,7 @@ export async function cargarMenu() {
   try {
     const sem  = numSem();
     const ano  = new Date().getFullYear();
-    const snap = await getDoc(doc(db, 'menus', 'menu-' + sem + '-' + ano));
+    const snap = await getDoc(doc(db, 'organizaciones', getOrgId(), 'menus', 'menu-' + sem + '-' + ano));
     if (snap.exists()) {
       const data = snap.data();
       menuSemana.lunes     = data.lunes     || '';
@@ -76,7 +76,7 @@ export async function guardarMenu() {
   const sem = numSem();
   const ano = new Date().getFullYear();
   try {
-    await setDoc(doc(db, 'menus', 'menu-' + sem + '-' + ano), {
+    await setDoc(doc(db, 'organizaciones', getOrgId(), 'menus', 'menu-' + sem + '-' + ano), {
       ...menuSemana,
       semana: sem,
       ano,

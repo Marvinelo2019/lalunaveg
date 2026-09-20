@@ -1,4 +1,4 @@
-import { E, numSem } from './state.js';
+import { E, numSem, getOrgId } from './state.js';
 import { todos, SUE } from './clientes.js';
 import { db } from './firebase-config.js';
 import { getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
@@ -17,7 +17,7 @@ const DIAS = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
     async function cargarDatosSemana(numSem, anio) {
       if (!numSem) return null; // semana actual usa E
       try {
-        const snap = await getDoc(doc(db, 'semanas', 'semana-' + numSem + '-' + anio));
+        const snap = await getDoc(doc(db, 'organizaciones', getOrgId(), 'semanas', 'semana-' + numSem + '-' + anio));
         if (snap.exists()) return snap.data();
       } catch(e) { console.log('Error cargando semana', numSem); }
       return null;
@@ -181,7 +181,7 @@ async function cargarComparativo(facActual, utiActual, almActual, costosActual) 
       ? 'semana-' + semAnt + '-' + ano
       : 'semana-52-' + (ano - 1);
 
-    const snap = await getDoc(doc(db, 'semanas', keyAnt));
+    const snap = await getDoc(doc(db, 'organizaciones', getOrgId(), 'semanas', keyAnt));
 
     if (!snap.exists()) {
       cont.innerHTML = '<div style="text-align:center;color:var(--text3);font-size:13px;padding:16px;">Sin datos de la semana anterior aun.</div>';

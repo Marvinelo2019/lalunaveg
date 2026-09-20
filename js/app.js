@@ -2,7 +2,7 @@ import { db, auth } from './firebase-config.js';
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { doc, setDoc, getDoc, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { CL_FIJOS, CL_NUEVOS, setCLNuevos, todos } from './clientes.js';
-import { E, semKey, numSem, toast } from './state.js';
+import { E, semKey, numSem, toast, setOrgId, getOrgId } from './state.js';
 import { renderPedidos } from './pedidos.js';
 import { renderEntregas } from './entregas.js';
 import { renderCobros } from './cobros.js';
@@ -28,24 +28,22 @@ export function render() {
 // ══════════════════════════════════════
 // MODO LOCAL — comentar antes de subir a Vercel
 // ══════════════════════════════════════
+
 const ES_LOCAL = window.location.hostname === '127.0.0.1' ||
                  window.location.hostname === 'localhost';
 
 if (ES_LOCAL) {
+  setOrgId('luna-veg');
   document.getElementById('loading').style.opacity = '0';
   setTimeout(() => {
-    document.getElementById('loading').style.display = 'none';
-    document.querySelector('.shell').style.display = 'flex';
-    document.querySelector('.bnav').style.display  = 'flex';
-    document.getElementById('sb-uname').textContent = 'Modo desarrollo';
+    document.getElementById('loading').style.display  = 'none';
+    document.querySelector('.shell').style.display    = 'flex';
+    document.querySelector('.bnav').style.display     = 'flex';
+    document.getElementById('sb-uname').textContent   = 'Modo desarrollo';
     document.getElementById('login-screen').style.display = 'none';
   }, 400);
   iniciarApp();
 } else {
-
-// ══════════════════════════════════════
-// PRODUCCION — Vercel
-// ══════════════════════════════════════
   onAuthStateChanged(auth, async user => {
     const loading     = document.getElementById('loading');
     const loginScreen = document.getElementById('login-screen');
@@ -53,6 +51,25 @@ if (ES_LOCAL) {
     const bnav        = document.querySelector('.bnav');
 
     if (user) {
+      // Leer la organizacion del usuario
+      try {
+        const userDoc = await getDoc(doc(db, 'usuarios', user.email));
+        if (!userDoc.exists()) {
+          toast('Usuario no autorizado');
+          await signOut(auth);
+          loading.style.opacity = '0';
+          setTimeout(() => {
+            loading.style.display = 'none';
+            loginScreen.style.display = 'flex';
+          }, 400);
+          return;
+        }
+        setOrgId(userDoc.data().orgId);
+      } catch(e) {
+        toast('Error al cargar la organizacion');
+        return;
+      }
+
       document.getElementById('sb-uname').textContent = user.displayName || user.email;
       const av = document.getElementById('sb-avatar');
       if (user.photoURL) av.src = user.photoURL;
@@ -73,8 +90,9 @@ if (ES_LOCAL) {
       }, 400);
     }
   });
+}
 
-} // fin else produccion
+// fin else produccion
 
 
 
@@ -87,7 +105,7 @@ async function iniciarApp() {
   document.getElementById('rep-sub').textContent  = 'Semana ' + sem + ' - ' + new Date().getFullYear();
 
   try {
-    const snap = await getDoc(doc(db, 'semanas', semKey()));
+    const snap = await getDoc(doc(db, 'organizaciones', getOrgId(), 'semanas', semKey()));
     if (snap.exists()) {
       const d = snap.data();
       if (d.pedidos) Object.assign(E.pedidos, d.pedidos);
@@ -97,12 +115,12 @@ async function iniciarApp() {
       if (d.viajes)  Object.assign(E.viajes,  d.viajes);
       if (d.costos)  Object.assign(E.costos,  d.costos);
     }
-    const clSnap = await getDocs(collection(db, 'clientes-nuevos'));
+    const clSnap = await getDocs(collection(db, 'organizaciones', getOrgId(), 'clientes-nuevos'));
     const nuevos = [];
     clSnap.forEach(d => nuevos.push({ ...d.data(), fid: d.id, fijo: false }));
     setCLNuevos(nuevos);
 
-    const editsSnap = await getDocs(collection(db, 'clientes-edits'));
+    const editsSnap = await getDocs(collection(db, 'organizaciones', getOrgId(), 'clientes-edits'));
     editsSnap.forEach(d => {
       const data = d.data();
       const cl = CL_FIJOS.find(c => c.id === data.id);
@@ -137,7 +155,7 @@ window.guardar = async () => {
   E.costos.desechables  = parseFloat(document.getElementById('costo-desechables').value)  || 0;
   E.costos.otros        = parseFloat(document.getElementById('costo-otros').value)        || 0;
   try {
-    await setDoc(doc(db, 'semanas', semKey()), {
+    await setDoc(doc(db, 'organizaciones', getOrgId(), 'semanas', semKey()), {
       semana: numSem(), ano: new Date().getFullYear(),
       pedidos: E.pedidos, lunes: E.lunes, jueves: E.jueves,
       cobros: E.cobros, viajes: E.viajes, costos: E.costos,
